@@ -31,9 +31,23 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ARQUIVO = join(ROOT, "packages", "db", "src", "types.ts");
 const local = process.argv.includes("--local");
 
-/** Remove o que varia por servidor e uniformiza a formatação. */
+/**
+ * Remove o que varia por servidor e uniformiza a formatação.
+ *
+ * O `(\n\s*\/\/[^\n]*)*` no início não é enfeite: o gerador emite duas linhas de
+ * comentário logo acima do `__InternalSupabase` explicando para que ele serve.
+ * Tirar só o bloco e deixar os comentários órfãos mantém exatamente duas linhas
+ * de divergência — que foi como este check falhou da primeira vez.
+ */
 async function normalizar(fonte) {
-  const semInterno = fonte.replace(/\n?\s*__InternalSupabase:\s*\{[^}]*\};?/, "");
+  const semInterno = fonte
+    // A declaração e os comentários que a antecedem.
+    .replace(/(\n\s*\/\/[^\n]*)*\n\s*__InternalSupabase:\s*\{[^}]*\};?/, "")
+    // E a referência lá embaixo, no helper: quando o gerador não emite o bloco,
+    // ele emite `= Database` direto em vez do Omit. Sem convergir as duas
+    // formas, some a declaração e sobra a referência.
+    .replace(/Omit<\s*Database\s*,\s*"__InternalSupabase"\s*>/g, "Database");
+
   return prettier.format(semInterno, { parser: "typescript", filepath: ARQUIVO });
 }
 
