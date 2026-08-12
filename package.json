@@ -2,7 +2,7 @@
   "name": "@forja/backend",
   "private": true,
   "type": "module",
-  "description": "Camada de dados e plataforma do Forja: schema Postgres, RLS, Edge Functions e o contrato @forja/db.",
+  "description": "Camada de dados e plataforma do Forja: schema Postgres, RLS, Edge Functions e o contrato @gabrielzubioli/db.",
   "workspaces": [
     "packages/*"
   ],
@@ -15,13 +15,13 @@
     "db:lint:local": "supabase db lint --local --schema public --fail-on warning",
     "db:diff": "supabase db diff --linked --schema public",
     "db:push": "supabase db push",
-    "db:build": "npm run build --workspace @forja/db",
-    "db:publish": "npm publish --workspace @forja/db",
+    "db:build": "npm run build --workspace @gabrielzubioli/db",
+    "db:publish": "npm publish --workspace @gabrielzubioli/db",
     "catalog:exercises": "node scripts/catalog/build-exercises.mjs",
     "catalog:foods": "node scripts/catalog/build-foods.mjs",
     "catalog:gymvisual": "node scripts/catalog/build-gymvisual.mjs",
     "catalog:media": "node scripts/catalog/match-gymvisual-media.mjs",
-    "typecheck": "npm run typecheck --workspace @forja/db",
+    "typecheck": "npm run typecheck --workspace @gabrielzubioli/db",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "verify": "npm run typecheck && npm run sync:validate && npm run db:build && npm run format:check"

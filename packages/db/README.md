@@ -1,4 +1,4 @@
-# @forja/db
+# @gabrielzubioli/db
 
 Artefatos de dados compartilhados entre o app web e o app mobile.
 

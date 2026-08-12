@@ -1,5 +1,5 @@
 {
-  "name": "@forja/db",
+  "name": "@gabrielzubioli/db",
   "version": "0.1.0",
   "type": "module",
   "description": "Contrato de dados do Forja: tipos gerados do Postgres (Supabase) + schema local do PowerSync. Fonte única para web e mobile.",

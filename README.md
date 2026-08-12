@@ -1,7 +1,7 @@
 # forja-backend
 
 Camada de dados e plataforma do Forja: schema do Postgres, RLS, Edge Functions,
-geradores de catálogo e o contrato `@forja/db`.
+geradores de catálogo e o contrato `@gabrielzubioli/db`.
 
 Este repositório **não tem servidor de aplicação**, e isso é uma decisão, não uma
 lacuna. Os apps falam direto com o Postgres via PostgREST, e o RLS é a fronteira
@@ -43,12 +43,12 @@ os scripts o leem de lá. O `.env` guarda só o que é credencial de verdade.
 | `npm run db:diff`        | Mostra o drift entre migrations e o banco             |
 | `npm run db:lint`        | Lint do schema                                        |
 | `npm run sync:validate`  | Valida `streams.yaml` contra o `AppSchema`            |
-| `npm run db:build`       | Compila `@forja/db` para `dist/`                      |
-| `npm run db:publish`     | Publica `@forja/db` no registry                       |
+| `npm run db:build`       | Compila `@gabrielzubioli/db` para `dist/`             |
+| `npm run db:publish`     | Publica `@gabrielzubioli/db` no registry              |
 | `npm run verify`         | typecheck + sync:validate + build + format:check      |
 | `npm run catalog:*`      | Regenera as migrations de seed do catálogo            |
 
-## O contrato: `@forja/db`
+## O contrato: `@gabrielzubioli/db`
 
 É a única coisa que o frontend importa daqui. Contém os tipos gerados do Postgres
 e o schema local do PowerSync, publicados como pacote versionado.

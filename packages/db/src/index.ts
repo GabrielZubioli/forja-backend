@@ -1,5 +1,5 @@
 /**
- * @forja/db — o contrato de dados do Forja.
+ * @gabrielzubioli/db — o contrato de dados do Forja.
  *
  * Este pacote é a **fonte única de verdade** sobre a forma dos dados. Ele é
  * gerado a partir do Postgres (`npm run db:types`) e publicado versionado; web e
@@ -22,11 +22,11 @@
  *
  * ## Subpaths (importe o mais estreito que servir)
  *
- * - `@forja/db/types` — só os tipos do Postgres. **Zero dependência de runtime**.
- * - `@forja/db/schema` — `AppSchema` do PowerSync. Requer `@powersync/common`.
- * - `@forja/db` — este barrel, que reexporta os dois.
+ * - `@gabrielzubioli/db/types` — só os tipos do Postgres. **Zero dependência de runtime**.
+ * - `@gabrielzubioli/db/schema` — `AppSchema` do PowerSync. Requer `@powersync/common`.
+ * - `@gabrielzubioli/db` — este barrel, que reexporta os dois.
  *
- * O app web deve importar de `@forja/db/types`: ele não usa PowerSync, e o
+ * O app web deve importar de `@gabrielzubioli/db/types`: ele não usa PowerSync, e o
  * barrel arrastaria `@powersync/common` para o bundle sem necessidade.
  *
  * As sync rules ficam em `sync/streams.yaml` (publicadas na instância PowerSync).

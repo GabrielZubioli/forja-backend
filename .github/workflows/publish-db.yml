@@ -1,4 +1,4 @@
-name: Publicar @forja/db
+name: Publicar @gabrielzubioli/db
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           node-version: 22
           cache: npm
           registry-url: https://npm.pkg.github.com
-          scope: "@forja"
+          scope: "@gabrielzubioli"
 
       - run: npm ci
 
@@ -47,19 +47,19 @@ jobs:
         run: |
           VERSION=$(node -p "require('./packages/db/package.json').version")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if npm view "@forja/db@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
+          if npm view "@gabrielzubioli/db@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
             echo "publicar=false" >> "$GITHUB_OUTPUT"
-            echo "@forja/db@$VERSION já está no registry — nada a fazer."
+            echo "@gabrielzubioli/db@$VERSION já está no registry — nada a fazer."
           else
             echo "publicar=true" >> "$GITHUB_OUTPUT"
-            echo "@forja/db@$VERSION é nova — publicando."
+            echo "@gabrielzubioli/db@$VERSION é nova — publicando."
           fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publicar
         if: steps.check.outputs.publicar == 'true'
-        run: npm publish --workspace @forja/db
+        run: npm publish --workspace @gabrielzubioli/db
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
