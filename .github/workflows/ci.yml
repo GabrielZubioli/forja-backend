@@ -58,16 +58,13 @@ jobs:
       - name: Subir o Postgres local e aplicar as migrations
         run: supabase db start
 
-      - name: Regenerar os tipos a partir do banco local
-        run: npm run db:types:local
-
+      # Compara o contrato versionado com o que as migrations produzem,
+      # ignorando formatação e o bloco `__InternalSupabase` — que carrega a
+      # versão do PostgREST do servidor, diferente entre este Postgres efêmero e
+      # o projeto remoto. Sem essa normalização o passo falha em todo push e
+      # vira ruído que se aprende a ignorar.
       - name: O contrato versionado está atualizado?
-        run: |
-          if ! git diff --exit-code -- packages/db/src/types.ts; then
-            echo "::error::packages/db/src/types.ts está desatualizado em relação às migrations."
-            echo "::error::Rode 'npm run db:types' e commite o resultado."
-            exit 1
-          fi
+        run: npm run db:types:check:local
 
       - name: Lint do schema
         run: supabase db lint --local --schema public --fail-on warning

@@ -9,7 +9,7 @@
   "scripts": {
     "db:types": "node scripts/gen-types.mjs",
     "db:types:local": "node scripts/gen-types.mjs --local",
-    "db:types:check": "npm run db:types && git diff --exit-code -- packages/db/src/types.ts",
+    "db:types:check": "node scripts/check-types.mjs",
     "sync:validate": "node scripts/validate-streams.mjs",
     "db:lint": "supabase db lint --linked --schema public --fail-on warning",
     "db:lint:local": "supabase db lint --local --schema public --fail-on warning",
@@ -24,7 +24,8 @@
     "typecheck": "npm run typecheck --workspace @gabrielzubioli/db",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run typecheck && npm run db:build && npm run sync:validate && npm run format:check"
+    "verify": "npm run typecheck && npm run db:build && npm run sync:validate && npm run format:check",
+    "db:types:check:local": "node scripts/check-types.mjs --local"
   },
   "devDependencies": {
     "prettier": "^3.7.3",
