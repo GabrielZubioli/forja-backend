@@ -1,0 +1,8 @@
+node_modules
+dist
+package-lock.json
+
+# Migrations geradas por scripts/catalog — enormes e reescritas por inteiro a
+# cada regeneração; formatá-las só produziria diff de ruído.
+supabase/migrations/*_seed_*.sql
+supabase/migrations/*_link_curated_media.sql

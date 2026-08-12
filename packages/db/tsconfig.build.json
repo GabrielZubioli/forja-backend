@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // O pacote é publicado como ESM com tipos. `moduleResolution: Bundler` serve
+    // para checar, mas o artefato precisa de extensões resolvíveis em runtime por
+    // Node e Metro — daí `NodeNext` no build.
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true
+  },
+  "include": ["src"]
+}

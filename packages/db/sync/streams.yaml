@@ -1,0 +1,53 @@
+# PowerSync Sync Streams (edition 3) — Forja
+#
+# Cole/publique este arquivo no dashboard da instância PowerSync conectada ao
+# Postgres do Supabase. `auth.user_id()` resolve o `sub` do JWT do Supabase.
+#
+# Estratégia de particionamento:
+#  - stream "user_owned": tudo que pertence ao usuário. Tabelas-filhas sem
+#    coluna user_id (workout_sets, workout_template_exercises, recipe_items)
+#    são filtradas por JOIN com a tabela-pai — não é preciso denormalizar.
+#  - stream "catalog": dados públicos de referência (exercícios/alimentos
+#    oficiais e contribuições musculares), sincronizados para todos.
+
+config:
+  edition: 3
+
+streams:
+  user_owned:
+    auto_subscribe: true
+    queries:
+      - SELECT * FROM profiles WHERE id = auth.user_id()
+      - SELECT * FROM user_roles WHERE user_id = auth.user_id()
+
+      - SELECT * FROM workout_templates WHERE user_id = auth.user_id()
+      - SELECT wte.* FROM workout_template_exercises wte
+        JOIN workout_templates t ON t.id = wte.template_id
+        WHERE t.user_id = auth.user_id()
+      - SELECT * FROM progression_settings WHERE user_id = auth.user_id()
+      - SELECT * FROM workout_sessions WHERE user_id = auth.user_id()
+      - SELECT ws.* FROM workout_sets ws
+        JOIN workout_sessions s ON s.id = ws.session_id
+        WHERE s.user_id = auth.user_id()
+
+      - SELECT * FROM food_log_entries WHERE user_id = auth.user_id()
+      - SELECT * FROM recipes WHERE user_id = auth.user_id()
+      - SELECT ri.* FROM recipe_items ri
+        JOIN recipes r ON r.id = ri.recipe_id
+        WHERE r.user_id = auth.user_id()
+
+      - SELECT * FROM body_weights WHERE user_id = auth.user_id()
+      - SELECT * FROM body_measurements WHERE user_id = auth.user_id()
+      - SELECT * FROM progress_photos WHERE user_id = auth.user_id()
+      - SELECT * FROM tdee_estimates WHERE user_id = auth.user_id()
+
+      # Itens personalizados do próprio usuário (catálogo privado)
+      - SELECT * FROM exercises WHERE owner_id = auth.user_id()
+      - SELECT * FROM foods WHERE owner_id = auth.user_id()
+
+  catalog:
+    auto_subscribe: true
+    queries:
+      - SELECT * FROM exercises WHERE is_public = true AND deleted_at IS NULL
+      - SELECT * FROM exercise_muscles
+      - SELECT * FROM foods WHERE is_public = true AND deleted_at IS NULL
