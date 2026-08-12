@@ -24,7 +24,7 @@
     "typecheck": "npm run typecheck --workspace @gabrielzubioli/db",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "verify": "npm run typecheck && npm run sync:validate && npm run db:build && npm run format:check"
+    "verify": "npm run typecheck && npm run db:build && npm run sync:validate && npm run format:check"
   },
   "devDependencies": {
     "prettier": "^3.7.3",
