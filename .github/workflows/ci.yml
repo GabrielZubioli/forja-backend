@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Typecheck, sync rules e build do contrato
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # typecheck + sync:validate + db:build + format:check
+      - run: npm run verify
+
+  migrations:
+    name: Migrations aplicam e o contrato bate com elas
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # Esta é a checagem que mais vale a pena do repositório, e não precisa de
+    # nenhum segredo: sobe um Postgres limpo, aplica todas as migrations em
+    # ordem e regenera os tipos a partir do resultado. Se uma migration quebrou,
+    # falha aqui; se alguém alterou o schema e esqueceu de rodar `db:types`, o
+    # diff no fim acusa. Sem isso, os dois erros só apareceriam em produção — o
+    # primeiro no deploy, o segundo em runtime no app.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - run: npm ci
+
+      # `db start` aplica supabase/migrations/*.sql em ordem num banco vazio.
+      - name: Subir o Postgres local e aplicar as migrations
+        run: supabase db start
+
+      - name: Regenerar os tipos a partir do banco local
+        run: npm run db:types:local
+
+      - name: O contrato versionado está atualizado?
+        run: |
+          if ! git diff --exit-code -- packages/db/src/types.ts; then
+            echo "::error::packages/db/src/types.ts está desatualizado em relação às migrations."
+            echo "::error::Rode 'npm run db:types' e commite o resultado."
+            exit 1
+          fi
+
+      - name: Lint do schema
+        run: supabase db lint --local --schema public --fail-on warning

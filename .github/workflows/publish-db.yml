@@ -1,0 +1,70 @@
+name: Publicar @forja/db
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "packages/db/**"
+  # Permite republicar manualmente se algo falhar no meio do caminho.
+  workflow_dispatch:
+
+concurrency:
+  group: publish-db
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publicar no bump de versão
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      # `contents: write` só existe para empurrar a tag `db-v*` no fim.
+      contents: write
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@forja"
+
+      - run: npm ci
+
+      - run: npm run verify
+
+      # O gatilho é o número da versão, não uma tag. Publicar é idempotente:
+      # se a versão já existe no registry, o job termina sem fazer nada. Isso
+      # deixa o fluxo ser simplesmente "editei o schema, subi a versão, mergei"
+      # — sem cerimônia de tag, e sem quebrar quando um commit toca
+      # packages/db/ sem mudar o contrato (um README, por exemplo).
+      - name: A versão atual já foi publicada?
+        id: check
+        run: |
+          VERSION=$(node -p "require('./packages/db/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if npm view "@forja/db@$VERSION" version --registry=https://npm.pkg.github.com >/dev/null 2>&1; then
+            echo "publicar=false" >> "$GITHUB_OUTPUT"
+            echo "@forja/db@$VERSION já está no registry — nada a fazer."
+          else
+            echo "publicar=true" >> "$GITHUB_OUTPUT"
+            echo "@forja/db@$VERSION é nova — publicando."
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publicar
+        if: steps.check.outputs.publicar == 'true'
+        run: npm publish --workspace @forja/db
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Marcar a versão publicada
+        if: steps.check.outputs.publicar == 'true'
+        run: |
+          git tag "db-v${{ steps.check.outputs.version }}"
+          git push origin "db-v${{ steps.check.outputs.version }}"

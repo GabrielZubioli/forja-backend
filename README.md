@@ -60,6 +60,51 @@ têm como divergir em silêncio.
 Ver [`packages/db/README.md`](packages/db/README.md) para os subpaths (`/types`,
 `/schema`) e por que existem dois tipos chamados `Database`.
 
+### O que cada número da versão significa
+
+Semver aqui fala sobre **compatibilidade de tipos**, não sobre o banco. A
+pergunta que decide o número é sempre a mesma: _o app que compila contra a
+versão anterior continua compilando?_
+
+|           | Quando                      | Exemplo                                                                  |
+| --------- | --------------------------- | ------------------------------------------------------------------------ |
+| **patch** | Nada muda para quem consome | comentário, README, correção de build                                    |
+| **minor** | Só adiciona                 | tabela nova, coluna nullable, valor novo num enum                        |
+| **major** | Quebra quem consome         | coluna removida ou renomeada, tipo alterado, coluna que virou `NOT NULL` |
+
+Um `major` é um aviso de que **algum arquivo do frontend vai parar de compilar**
+— que é exatamente o ponto: o erro aparece no `tsc`, no PR, e não em produção
+quando um `select` volta `undefined`.
+
+Vale notar que a migration que remove uma coluna e o `major` que anuncia isso
+são coisas separadas: o banco já mudou quando o pacote é publicado. Para
+mudanças destrutivas, o caminho seguro continua sendo o de sempre — adicionar o
+novo, migrar os apps, remover o velho numa segunda migration.
+
+### Como publicar
+
+Suba `version` em `packages/db/package.json` e mergeie na `main`. O workflow
+[`publish-db.yml`](.github/workflows/publish-db.yml) publica e cria a tag
+`db-v<versão>`.
+
+O gatilho é o número da versão, não uma tag: se a versão já existe no registry,
+o job termina sem fazer nada. Assim um commit que toca `packages/db/` sem mudar
+o contrato (um README, por exemplo) não quebra o pipeline.
+
+## CI
+
+| Workflow                | Quando                              | O que faz                                                                                                       |
+| ----------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `ci.yml` → `verify`     | push/PR na main                     | typecheck, sync:validate, build, format                                                                         |
+| `ci.yml` → `migrations` | push/PR na main                     | sobe um Postgres limpo, aplica todas as migrations, regenera os tipos e falha se o contrato versionado divergir |
+| `publish-db.yml`        | push na main tocando `packages/db/` | publica se a versão for nova                                                                                    |
+
+O job `migrations` é o que mais protege e **não usa segredo nenhum**: um
+`supabase db start` aplica as migrations em ordem num banco vazio. Se uma
+migration quebrou, falha ali; se alguém mudou o schema e esqueceu de rodar
+`db:types`, o diff acusa. Sem ele, o primeiro erro apareceria no deploy e o
+segundo em runtime, dentro do app.
+
 ## Migrations
 
 Migrations são **imutáveis depois de aplicadas**. Para corrigir algo, escreva uma
