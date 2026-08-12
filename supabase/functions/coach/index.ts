@@ -30,8 +30,22 @@
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const MODEL = "claude-sonnet-4-5";
-const MAX_TOKENS = 1024;
+/**
+ * Sonnet 5 sucede o Sonnet 4.5 que estava aqui — mesma faixa de custo e
+ * latência, que é o que um chat de treinador precisa. Opus 5 está disponível se
+ * um dia a conversa exigir mais capacidade; a troca é só esta constante.
+ */
+const MODEL = "claude-sonnet-5";
+
+/**
+ * Sonnet 5 pensa por padrão quando `thinking` é omitido — o Sonnet 4.5 não. Como
+ * `max_tokens` limita pensamento **e** texto no mesmo teto, manter o 1024 de
+ * antes cortaria a resposta no meio para caber o raciocínio. O teto subiu, e o
+ * esforço é `low`: uma pergunta de treino não justifica deliberação longa, e a
+ * latência é o que o usuário sente no chat.
+ */
+const MAX_TOKENS = 4096;
+const EFFORT = "low";
 
 /** Teto por mensagem, para uma conversa longa não estourar contexto nem custo. */
 const MAX_HISTORY = 20;
@@ -116,8 +130,10 @@ Deno.serve(async (req: Request) => {
       body: JSON.stringify({
         model: MODEL,
         max_tokens: MAX_TOKENS,
+        output_config: { effort: EFFORT },
         system: systemPrompt(context),
         messages,
+        stream: true,
       }),
     });
   } catch {
@@ -140,15 +156,27 @@ Deno.serve(async (req: Request) => {
     );
   }
 
-  const data = await response.json();
-  const text =
-    Array.isArray(data.content) && data.content[0]?.type === "text" ? data.content[0].text : "";
+  // O corpo da Anthropic é repassado direto ao browser, sem bufferizar. Esperar
+  // a resposta inteira antes de devolver qualquer coisa é o que fazia o chat
+  // parecer travado: numa resposta de alguns parágrafos são segundos olhando
+  // para um cursor parado, e o texto já estava pronto no servidor.
+  //
+  // O formato SSE da Anthropic é repassado como está — o cliente lê os eventos
+  // `content_block_delta` e concatena `delta.text`.
+  if (!response.body) {
+    return json({ error: "Não foi possível falar com o treinador agora." }, 502);
+  }
 
-  return json({
-    content: text,
-    usage: {
-      inputTokens: data.usage?.input_tokens ?? null,
-      outputTokens: data.usage?.output_tokens ?? null,
+  return new Response(response.body, {
+    status: 200,
+    headers: {
+      ...CORS,
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      // Sem isto, um proxy intermediário pode acumular o corpo e entregar tudo
+      // de uma vez — o que desfaz o streaming sem erro nenhum aparecer.
+      "X-Accel-Buffering": "no",
     },
   });
 });
