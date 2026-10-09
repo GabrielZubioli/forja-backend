@@ -61,7 +61,9 @@ export function toSubscriptionUpdate(event: RevenueCatEvent): SubscriptionUpdate
     store,
     productId: event.product_id,
     status,
-    currentPeriodEnd: event.expiration_at_ms ? new Date(event.expiration_at_ms).toISOString() : null,
+    currentPeriodEnd: event.expiration_at_ms
+      ? new Date(event.expiration_at_ms).toISOString()
+      : null,
     eventAt: new Date(event.event_timestamp_ms).toISOString(),
   };
 }
