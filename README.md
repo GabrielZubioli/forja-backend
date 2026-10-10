@@ -1,4 +1,4 @@
-# forja-backend
+# habitual-fit-backend
 
 Camada de dados e plataforma do Habitual Fit: schema do Postgres, RLS, Edge Functions,
 geradores de catálogo e o contrato `@gabrielzubioli/db`.
