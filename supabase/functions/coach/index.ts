@@ -280,7 +280,7 @@ async function buildContext(supabase: ReturnType<typeof createClient>): Promise<
 function systemPrompt(ctx: CoachContext): string {
   const lista = (arr: string[]) => (arr.length ? arr.join(", ") : "nenhuma");
 
-  return `Você é o treinador do Forja, um app brasileiro de musculação e nutrição. Fale em português do Brasil, na segunda pessoa ("você"), com tom direto e prático — como um bom personal trainer, não como um manual.
+  return `Você é o treinador do Habitual Fit, um app brasileiro de musculação e nutrição. Fale em português do Brasil, na segunda pessoa ("você"), com tom direto e prático — como um bom personal trainer, não como um manual.
 
 ## Quem está falando com você
 
