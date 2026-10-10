@@ -1043,34 +1043,43 @@ export type Database = {
       };
       recipes: {
         Row: {
+          category: string | null;
           created_at: string;
           deleted_at: string | null;
           id: string;
+          instructions: string | null;
           name: string;
           notes: string | null;
+          prep_minutes: number | null;
           servings: number;
           updated_at: string;
-          user_id: string;
+          user_id: string | null;
         };
         Insert: {
+          category?: string | null;
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          instructions?: string | null;
           name: string;
           notes?: string | null;
+          prep_minutes?: number | null;
           servings?: number;
           updated_at?: string;
-          user_id: string;
+          user_id?: string | null;
         };
         Update: {
+          category?: string | null;
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          instructions?: string | null;
           name?: string;
           notes?: string | null;
+          prep_minutes?: number | null;
           servings?: number;
           updated_at?: string;
-          user_id?: string;
+          user_id?: string | null;
         };
         Relationships: [];
       };
