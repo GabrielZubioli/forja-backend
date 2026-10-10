@@ -1074,6 +1074,39 @@ export type Database = {
         };
         Relationships: [];
       };
+      subscriptions: {
+        Row: {
+          created_at: string;
+          current_period_end: string | null;
+          last_event_at: string;
+          product_id: string;
+          status: string;
+          store: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          current_period_end?: string | null;
+          last_event_at: string;
+          product_id: string;
+          status: string;
+          store: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          created_at?: string;
+          current_period_end?: string | null;
+          last_event_at?: string;
+          product_id?: string;
+          status?: string;
+          store?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       user_meal_slots: {
         Row: {
           created_at: string;
@@ -1170,6 +1203,7 @@ export type Database = {
           is_active: boolean;
           level: string;
           name: string;
+          schedule_mode: string;
           training_weekdays: number[];
           updated_at: string;
           user_id: string;
@@ -1185,6 +1219,7 @@ export type Database = {
           is_active?: boolean;
           level: string;
           name: string;
+          schedule_mode?: string;
           training_weekdays?: number[];
           updated_at?: string;
           user_id: string;
@@ -1200,6 +1235,7 @@ export type Database = {
           is_active?: boolean;
           level?: string;
           name?: string;
+          schedule_mode?: string;
           training_weekdays?: number[];
           updated_at?: string;
           user_id?: string;
@@ -1421,6 +1457,7 @@ export type Database = {
           routine_order: number | null;
           updated_at: string;
           user_id: string;
+          weekdays: number[];
         };
         Insert: {
           created_at?: string;
@@ -1433,6 +1470,7 @@ export type Database = {
           routine_order?: number | null;
           updated_at?: string;
           user_id: string;
+          weekdays?: number[];
         };
         Update: {
           created_at?: string;
@@ -1445,6 +1483,7 @@ export type Database = {
           routine_order?: number | null;
           updated_at?: string;
           user_id?: string;
+          weekdays?: number[];
         };
         Relationships: [
           {
@@ -1462,6 +1501,17 @@ export type Database = {
     };
     Functions: {
       all_http_urls: { Args: { urls: string[] }; Returns: boolean };
+      apply_subscription_event: {
+        Args: {
+          _current_period_end: string;
+          _event_at: string;
+          _product_id: string;
+          _status: string;
+          _store: string;
+          _user_id: string;
+        };
+        Returns: undefined;
+      };
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"];
@@ -1469,6 +1519,7 @@ export type Database = {
         };
         Returns: boolean;
       };
+      is_premium: { Args: never; Returns: boolean };
       show_limit: { Args: never; Returns: number };
       show_trgm: { Args: { "": string }; Returns: string[] };
     };
