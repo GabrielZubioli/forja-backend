@@ -680,6 +680,7 @@ export type Database = {
           notes: string | null;
           position: number;
           prep_notes: string | null;
+          weekday: number | null;
           updated_at: string;
         };
         Insert: {
@@ -691,6 +692,7 @@ export type Database = {
           notes?: string | null;
           position?: number;
           prep_notes?: string | null;
+          weekday?: number | null;
           updated_at?: string;
         };
         Update: {
@@ -702,6 +704,7 @@ export type Database = {
           notes?: string | null;
           position?: number;
           prep_notes?: string | null;
+          weekday?: number | null;
           updated_at?: string;
         };
         Relationships: [
