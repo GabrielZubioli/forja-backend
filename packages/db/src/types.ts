@@ -1050,6 +1050,7 @@ export type Database = {
           created_at: string;
           deleted_at: string | null;
           id: string;
+          image_url: string | null;
           instructions: string | null;
           name: string;
           notes: string | null;
@@ -1063,6 +1064,7 @@ export type Database = {
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          image_url?: string | null;
           instructions?: string | null;
           name: string;
           notes?: string | null;
@@ -1076,6 +1078,7 @@ export type Database = {
           created_at?: string;
           deleted_at?: string | null;
           id?: string;
+          image_url?: string | null;
           instructions?: string | null;
           name?: string;
           notes?: string | null;
