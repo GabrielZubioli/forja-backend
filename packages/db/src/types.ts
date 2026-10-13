@@ -914,6 +914,7 @@ export type Database = {
           sex: Database["public"]["Enums"]["sex_t"] | null;
           sleep_time: string | null;
           training_place: string | null;
+          tutorial_completed_at: string | null;
           unit_system: Database["public"]["Enums"]["unit_system_t"];
           updated_at: string;
           wake_time: string | null;
@@ -952,6 +953,7 @@ export type Database = {
           sex?: Database["public"]["Enums"]["sex_t"] | null;
           sleep_time?: string | null;
           training_place?: string | null;
+          tutorial_completed_at?: string | null;
           unit_system?: Database["public"]["Enums"]["unit_system_t"];
           updated_at?: string;
           wake_time?: string | null;
@@ -990,6 +992,7 @@ export type Database = {
           sex?: Database["public"]["Enums"]["sex_t"] | null;
           sleep_time?: string | null;
           training_place?: string | null;
+          tutorial_completed_at?: string | null;
           unit_system?: Database["public"]["Enums"]["unit_system_t"];
           updated_at?: string;
           wake_time?: string | null;
