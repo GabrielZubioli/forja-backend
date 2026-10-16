@@ -206,6 +206,7 @@ export type Database = {
         Row: {
           log_date: string;
           materialized_at: string;
+          meal_labels: Json;
           notes: string | null;
           plan_id: string | null;
           user_id: string;
@@ -213,6 +214,7 @@ export type Database = {
         Insert: {
           log_date: string;
           materialized_at?: string;
+          meal_labels?: Json;
           notes?: string | null;
           plan_id?: string | null;
           user_id: string;
@@ -220,6 +222,7 @@ export type Database = {
         Update: {
           log_date?: string;
           materialized_at?: string;
+          meal_labels?: Json;
           notes?: string | null;
           plan_id?: string | null;
           user_id?: string;
